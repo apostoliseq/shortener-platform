@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/apostoliseq/shortener-platform/api/store"
 )
@@ -25,6 +26,12 @@ func Shorten(w http.ResponseWriter, r *http.Request) {
 
 	if body.URL == "" {
 		http.Error(w, "url is required", http.StatusBadRequest)
+		return
+	}
+
+	parsed, err := url.Parse(body.URL)
+	if err != nil || (parsed.Scheme != "http" && parsed.Scheme != "https") {
+		http.Error(w, "invalid url", http.StatusBadRequest)
 		return
 	}
 
